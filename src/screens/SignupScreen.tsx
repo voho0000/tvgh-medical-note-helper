@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../services/auth';
+import { Button, TextField, Box, Typography } from '@mui/material';
 import toast from 'react-hot-toast';
 
 const SignupScreen = () => {
@@ -27,12 +28,48 @@ const SignupScreen = () => {
     };
 
     return (
-        <div>
-            <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
-            <input placeholder="Comfirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type="password" />
-            <button onClick={signupHandler}>Sign Up</button>
-        </div>
+        <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
+            minHeight="100vh"
+            bgcolor="background.default"
+            padding={2}
+        >
+            <Typography variant="h4" mb={2}>
+                Sign Up
+            </Typography>
+            <TextField
+                label="Email"
+                variant="outlined"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                fullWidth
+                margin="normal"
+            />
+            <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                fullWidth
+                margin="normal"
+            />
+            <TextField
+                label="Confirm Password"
+                type="password"
+                variant="outlined"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                fullWidth
+                margin="normal"
+            />
+            <Button color="primary" variant="contained" onClick={signupHandler} fullWidth>
+                Sign Up
+            </Button>
+        </Box>
     );
 };
 

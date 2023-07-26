@@ -1,5 +1,6 @@
-// TabComponent.tsx
 import React from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 interface TabComponentProps {
     activeTab: string;
@@ -7,11 +8,20 @@ interface TabComponentProps {
 }
 
 const TabComponent: React.FC<TabComponentProps> = ({ activeTab, setActiveTab }) => {
+    const handleTabChange = (event: React.ChangeEvent<{}>, newValue: string) => {
+        setActiveTab(newValue);
+    };
+
     return (
-        <div>
-            <button onClick={() => setActiveTab('asr')}>ASR</button>
-            <button onClick={() => setActiveTab('getdata')}>Get Data</button>
-        </div>
+        <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            style={{ minHeight: '40px', height: '40px' }}
+        >
+            <Tab value="asr" label="ASR" style={{ minHeight: '40px', height: '40px' }} />
+            <Tab value="getdata" label="Get Data" style={{ minHeight: '40px', height: '40px' }} />
+        </Tabs>
     );
 };
 

@@ -2,13 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { callGPTAPI } from '../services/callGPTAPI';
 import { useRecording } from '../services/useRecording';
-import IconButton from '../components/IconButton';
 import { uploadDataToFirestore, fetchSinglePatientRecord } from '../services/FirestoreService';
 import useSoundRecorder from '../services/useSoundRecorder';
 import { useAudioRecorder } from 'react-audio-voice-recorder';
 import { transcribeAudio } from '../services/transcribeAudio';
 import { auth } from '../../firebaseConfig';
 import { signInWithCustomToken } from "firebase/auth";
+import { TextField, Button, Box, IconButton } from '@mui/material';
+import MicIcon from '@mui/icons-material/Mic';
+import StopIcon from '@mui/icons-material/Stop';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const RecordingScreen: React.FC = () => {
     const [patientInfo, setPatientInfo] = useState<string>("");
@@ -104,52 +109,68 @@ const RecordingScreen: React.FC = () => {
         }
     }, [recordingBlob]);
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#6554AF',
+            },
+        },
+    });
+
     return (
-        <div>
-            {/* <button onClick={handleBack}>Back</button> */}
-            <textarea
-                placeholder="Enter patient info here"
-                onChange={e => setPatientInfo(e.target.value)}
-                value={patientInfo}
-            />
-            <div>
-                {isRecording ? (
-                    <>
-                        <IconButton
-                            onPress={togglePauseResume}
-                            iconName={isPaused ? "play" : "pause"}
-                        />
-                        <IconButton
-                            onPress={stopRecording}
-                            iconName="stop"
-                        />
-                    </>
-                ) : (
-                    <IconButton
-                        onPress={startRecording}
-                        iconName="microphone"
-                    />
-                )}
-                {/* <p>Record Time: {counter} s</p> */}
-                {/* <button onClick={startRecording}>Start Recording</button>
-                <button onClick={stopRecording}>Stop Recording</button>
-                <button onClick={togglePauseResume}>
-                    {isPaused ? 'Resume' : 'Pause'}
-                </button> */}
-            </div>
-            <textarea
-                onChange={e => setAsrResponse(e.target.value)}
-                value={asrResponse}
-                placeholder="Start recording to get ASR result"
-            />
-            <button onClick={sendToGPT} disabled={isLoading}>Send to GPT</button>
-            <textarea
-                value={gptResponse}
-                onChange={e => setGptResponse(e.target.value)}
-                placeholder="GPT response"
-            />
-            {/* <button onClick={() => sendToServer(gptResponse)}>Send to server</button> */}
-        </div>
+        <ThemeProvider theme={theme}>
+            <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column' }}>
+                <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    onChange={e => setPatientInfo(e.target.value)}
+                    value={patientInfo}
+                    placeholder="Enter patient info here"
+                    sx={{ mt: 2 }}
+                />
+                <Box sx={{ mt: 2 }}>
+                    {isRecording ? (
+                        <>
+                            <IconButton onClick={togglePauseResume}>
+                                {isPaused ? <PlayArrowIcon /> : <PauseIcon />}
+                            </IconButton>
+                            <IconButton onClick={stopRecording}>
+                                <StopIcon />
+                            </IconButton>
+                        </>
+                    ) : (
+                        <IconButton onClick={startRecording}>
+                            <MicIcon />
+                        </IconButton>
+                    )}
+                </Box>
+                <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    onChange={e => setAsrResponse(e.target.value)}
+                    value={asrResponse}
+                    placeholder="Start recording to get ASR result"
+                    sx={{ mt: 2 }}
+                />
+                <Button variant="outlined" color="primary" onClick={sendToGPT} disabled={isLoading} fullWidth sx={{ mt: 2 }}>
+                    Send to GPT
+                </Button>
+                <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    variant="outlined"
+                    value={gptResponse}
+                    onChange={e => setGptResponse(e.target.value)}
+                    placeholder="GPT response"
+                    sx={{ mt: 2 }}
+                />
+            </Box>
+        </ThemeProvider>
     );
 };
 

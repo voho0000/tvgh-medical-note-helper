@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchPatientRecords, addPatientRecord, deletePatientRecord } from '../services/FirestoreService';
 import { logout } from '../services/auth';
+import { Button, Box, IconButton, List, ListItem, Typography, Grid, ListItemButton, ListItemText } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const HomeScreen = () => {
     const [items, setItems] = useState<string[]>([]);
@@ -47,18 +50,47 @@ const HomeScreen = () => {
         navigate('/login', { replace: true });
     };
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: '#6554AF',
+            },
+        },
+    });
+
     return (
-        <div>
-            <button onClick={handleAddItem}>Add a Patient</button>
-            {items.map((item, index) => (
-                <div key={index}>
-                    <span onClick={() => handlePressItem(item)}>{item}</span>
-                    <button onClick={() => deleteItem(index)}>Delete</button>
-                </div>
-            ))}
-            <button onClick={handleLogout}>Log Out</button>
-        </div>
+        <ThemeProvider theme={theme}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+                <Button variant="contained" color="primary" onClick={handleAddItem} fullWidth style={{ marginTop: '10px' }}>
+                    Add a Patient
+                </Button>
+                <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+                    <List>
+                        {items.map((item, index) => (
+                            <ListItem divider key={index} style={{ paddingTop: 0, paddingBottom: 0, margin: 0 }}>
+                                <Grid container alignItems="center">
+                                    <Grid item xs={10}>
+                                        <ListItemButton onClick={() => handlePressItem(item)}>
+                                            <ListItemText primary={item} primaryTypographyProps={{fontSize: '20px'}} style={{ lineHeight: 1, margin: 0 }} />
+                                        </ListItemButton>
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <IconButton onClick={() => deleteItem(index)}><DeleteIcon /></IconButton>
+                                    </Grid>
+                                </Grid>
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+                <Box position="sticky" bottom={0} width="100%" bgcolor="background.default">
+                    <Button variant="outlined" color="primary" onClick={handleLogout} fullWidth style={{ marginBottom: '10px' }}>
+                        Log Out
+                    </Button>
+                </Box>
+            </Box>
+        </ThemeProvider>
     );
 };
+
 
 export default HomeScreen;
