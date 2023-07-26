@@ -11,6 +11,8 @@ export const useRecording = (setAsrResponse: React.Dispatch<React.SetStateAction
     // const [chunks, setChunks] = useState<Blob[]>([]);
     let audioChunks: BlobPart[] = [];  // Define it here
 
+    const [permission, setPermission] = useState(false);
+    const [stream, setStream] = useState(null);
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval> | null = null;
@@ -25,31 +27,35 @@ export const useRecording = (setAsrResponse: React.Dispatch<React.SetStateAction
     }, [isRecording, isPaused]);
 
     const startRecording = async () => {
-        try {
-            chrome.tabCapture.capture({
-                audio: true,
-                video: false
-            }, function (stream) {
-                if (stream) {
-                    console.log('Captured stream:', stream);
-                    console.log('Stream tracks:', stream.getTracks());
-                    const newMediaRecorder = new MediaRecorder(stream);
-                    newMediaRecorder.ondataavailable = (e) => {
-                        console.log('Data available:', e.data);
-                        audioChunks.push(e.data);
-                    };
-                    newMediaRecorder.start();
-
-                    setMediaRecorder(newMediaRecorder);
-                    setIsRecording(true);
-                } else {
-                    console.error('Unable to capture the tab. Please check permissions.');
-                    toast.error('Unable to capture the tab. Please check permissions.');
+        // navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        // .then(function(stream) {
+        //   const mediaRecorder = new MediaRecorder(stream);
+        //   mediaRecorder.ondataavailable = function(e) {
+        //     console.log('Data available:', e.data);
+        //     audioChunks.push(e.data);
+        //   };
+        //   mediaRecorder.start();
+        //   setMediaRecorder(mediaRecorder);
+        //   setIsRecording(true);
+        // })
+        // .catch(function(err) {
+        //   console.log('The following getUserMedia error occurred: ' + err);
+        // });
+        if ("MediaRecorder" in window) {
+            try {
+                const streamData = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: false,
+                });
+                setPermission(true);
+                if (streamData) {
+                    console.log("stream", streamData);
                 }
-            });
-        } catch (error) {
-            console.error('Failed to start recording:', error);
-            toast.error('Failed to start recording. Please try again.');
+            } catch (err) {
+                console.error("Error in getting stream:", err);
+            }
+        } else {
+            alert("The MediaRecorder API is not supported in your browser.");
         }
     };
 

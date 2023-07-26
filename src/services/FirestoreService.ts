@@ -75,7 +75,8 @@ export const fetchSinglePatientRecord = async (
   // }
 
   // return docSnap.data();
-
+  // const userID =auth.currentUser?.uid
+  // console.log(userID)
 
   const docSnap = await getDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId));
 

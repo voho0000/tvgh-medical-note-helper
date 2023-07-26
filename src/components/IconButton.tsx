@@ -11,31 +11,31 @@ const IconButton: React.FC<IconButtonProps> = ({ onPress, iconName }) => {
 
   switch(iconName) {
     case 'microphone':
-      IconComponent = <FaMicrophone size={30} color="white" />;
+      IconComponent = <FaMicrophone size={20} color="white" />;
       break;
     case 'play':
-      IconComponent = <FaPlay size={30} color="white" />;
+      IconComponent = <FaPlay size={20} color="white" />;
       break;
     case 'stop':
-      IconComponent = <FaStop size={30} color="white" />;
+      IconComponent = <FaStop size={20} color="white" />;
       break;
     case 'pause':
-      IconComponent = <FaPause size={30} color="white" />;
+      IconComponent = <FaPause size={20} color="white" />;
       break;
     default:
-      IconComponent = <FaMicrophone size={30} color="white" />;
+      IconComponent = <FaMicrophone size={20} color="white" />;
   }
 
   return (
     <button onClick={onPress} style={{
       backgroundColor: 'red',
-      borderRadius: 30,
-      width: 50,
-      height: 50,
+      borderRadius: 20,
+      width: 30,
+      height: 30,
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      margin: 10,
+      margin: 5,
       border: 'none',
       cursor: 'pointer',
       outline: 'none',

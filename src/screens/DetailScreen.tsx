@@ -5,6 +5,11 @@ import { callGPTAPI } from '../services/callGPTAPI';
 import { useRecording } from '../services/useRecording';
 import { uploadDataToFirestore, fetchSinglePatientRecord } from '../services/FirestoreService';
 import { auth } from '../../firebaseConfig';
+import { useAudioRecorder } from 'react-audio-voice-recorder';
+import { transcribeAudio } from '../services/transcribeAudio';
+import IconButton from '../components/IconButton';
+import { getAuth } from 'firebase/auth';
+
 
 const DetailScreen: React.FC = () => {
     const [patientInfo, setPatientInfo] = useState<string>("");
@@ -12,17 +17,27 @@ const DetailScreen: React.FC = () => {
     const [gptResponse, setGptResponse] = useState<string>(""); // Stores the GPT response
     const [isLoading, setIsLoading] = useState<boolean>(false); // Handles loading state
     const [isLoadingData, setIsLoadingData] = useState(true); // Add a new loading state
-    const userId =auth.currentUser?.uid
+    const userId = auth.currentUser?.uid
 
+    // const {
+    //     isRecording,
+    //     isPaused,
+    //     counter,
+    //     startRecording,
+    //     stopRecording,
+    //     pauseRecording,
+    //     resumeRecording,
+    // } = useRecording(setAsrResponse);
     const {
-        isRecording,
-        isPaused,
-        counter,
         startRecording,
         stopRecording,
-        pauseRecording,
-        resumeRecording,
-    } = useRecording(setAsrResponse);
+        togglePauseResume,
+        recordingBlob,
+        isRecording,
+        isPaused,
+        recordingTime,
+        mediaRecorder,
+    } = useAudioRecorder();
 
 
     const { patientId } = useParams<{ patientId: string }>();
@@ -49,9 +64,12 @@ const DetailScreen: React.FC = () => {
     //     // create a new tab with the recording screen
     //     chrome.tabs.create({url: `recording.html?patientId=${patientId}`});
     // };
-    const handleNewTab = () => {
-        const newTabUrl = `recording.html?patientId=${patientId}&userId=${userId}`;
-        chrome.tabs.create({ url: newTabUrl });
+    const handleNewTab = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const newTabUrl = `recording.html?patientId=${patientId}&userId=${userId}`;
+            chrome.tabs.create({ url: newTabUrl });
+        }
     };
 
     useEffect(() => {
@@ -84,6 +102,20 @@ const DetailScreen: React.FC = () => {
         }
     }, [patientInfo, asrResponse, gptResponse, patientId, isLoadingData]); // Add isLoadingData to dependencies
 
+    useEffect(() => {
+        if (recordingBlob) {
+            console.log('recordingBlob', recordingBlob)
+            transcribeAudio(recordingBlob)
+                .then(transcript => {
+                    // Do something with the transcript...
+                    setAsrResponse(transcript);
+                })
+                .catch(error => {
+                    console.error('Failed to transcribe audio:', error);
+                });
+        }
+    }, [recordingBlob]);
+
     return (
         <div>
             <button onClick={handleBack}>Back</button>
@@ -93,7 +125,24 @@ const DetailScreen: React.FC = () => {
                 value={patientInfo}
             />
             <div>
-                <button onClick={handleNewTab}>go to recording</button>
+                <button onClick={handleNewTab}>Go to Recording</button>
+                {isRecording ? (
+                    <>
+                        <IconButton
+                            onPress={togglePauseResume}
+                            iconName={isPaused ? "play" : "pause"}
+                        />
+                        <IconButton
+                            onPress={stopRecording}
+                            iconName="stop"
+                        />
+                    </>
+                ) : (
+                    <IconButton
+                        onPress={startRecording}
+                        iconName="microphone"
+                    />
+                )}
             </div>
             <textarea
                 onChange={e => setAsrResponse(e.target.value)}

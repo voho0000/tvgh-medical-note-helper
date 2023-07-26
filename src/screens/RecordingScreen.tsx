@@ -5,6 +5,10 @@ import { useRecording } from '../services/useRecording';
 import IconButton from '../components/IconButton';
 import { uploadDataToFirestore, fetchSinglePatientRecord } from '../services/FirestoreService';
 import useSoundRecorder from '../services/useSoundRecorder';
+import { useAudioRecorder } from 'react-audio-voice-recorder';
+import { transcribeAudio } from '../services/transcribeAudio';
+import { auth } from '../../firebaseConfig';
+import { signInWithCustomToken } from "firebase/auth";
 
 const RecordingScreen: React.FC = () => {
     const [patientInfo, setPatientInfo] = useState<string>("");
@@ -13,15 +17,26 @@ const RecordingScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false); // Handles loading state
     const [isLoadingData, setIsLoadingData] = useState(true); // Add a new loading state
 
+    // const {
+    //     isRecording,
+    //     isPaused,
+    //     counter,
+    //     startRecording,
+    //     stopRecording,
+    //     pauseRecording,
+    //     resumeRecording,
+    // } = useRecording(setAsrResponse);
+
     const {
-        isRecording,
-        isPaused,
-        counter,
         startRecording,
         stopRecording,
-        pauseRecording,
-        resumeRecording,
-    } = useRecording(setAsrResponse);
+        togglePauseResume,
+        recordingBlob,
+        isRecording,
+        isPaused,
+        recordingTime,
+        mediaRecorder,
+    } = useAudioRecorder();
 
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -39,6 +54,7 @@ const RecordingScreen: React.FC = () => {
         }
         setIsLoading(false);
     };
+
 
     // const handleBack = () => {
     //     // Using navigate with '..' will take you up one level in the URL hierarchy
@@ -75,6 +91,19 @@ const RecordingScreen: React.FC = () => {
         }
     }, [patientInfo, asrResponse, gptResponse, patientId, isLoadingData]); // Add isLoadingData to dependencies
 
+    useEffect(() => {
+        if (recordingBlob) {
+            transcribeAudio(recordingBlob)
+                .then(transcript => {
+                    // Do something with the transcript...
+                    setAsrResponse(transcript);
+                })
+                .catch(error => {
+                    console.error('Failed to transcribe audio:', error);
+                });
+        }
+    }, [recordingBlob]);
+
     return (
         <div>
             {/* <button onClick={handleBack}>Back</button> */}
@@ -87,20 +116,26 @@ const RecordingScreen: React.FC = () => {
                 {isRecording ? (
                     <>
                         <IconButton
-                            onPress={isPaused ? resumeRecording : pauseRecording}
+                            onPress={togglePauseResume}
                             iconName={isPaused ? "play" : "pause"}
                         />
                         <IconButton
                             onPress={stopRecording}
                             iconName="stop"
-                        />                    </>
+                        />
+                    </>
                 ) : (
                     <IconButton
                         onPress={startRecording}
                         iconName="microphone"
                     />
                 )}
-                <p>Record Time: {counter} s</p>
+                {/* <p>Record Time: {counter} s</p> */}
+                {/* <button onClick={startRecording}>Start Recording</button>
+                <button onClick={stopRecording}>Stop Recording</button>
+                <button onClick={togglePauseResume}>
+                    {isPaused ? 'Resume' : 'Pause'}
+                </button> */}
             </div>
             <textarea
                 onChange={e => setAsrResponse(e.target.value)}
