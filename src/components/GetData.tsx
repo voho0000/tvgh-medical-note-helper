@@ -48,7 +48,7 @@ const GetData = () => {
             const category = $(elem).find('td').eq(6).text().trim();
             const date = new Date(dateStr);
 
-            if (date >= new Date(formattedDate) && category === '急診' && source === 'Blood') {
+            if (date >= new Date(formattedDate) && category === '急診') { //  && source === 'Blood'
                 const href = $(elem).find('td a[title="resdetail"]').attr('href');
                 if (href) hrefs.push(href);
             }

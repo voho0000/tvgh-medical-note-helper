@@ -3,8 +3,12 @@
     "name": "GPT medical helper",
     "version": "1.0.0",    
     "description": "Help clinicians",
-    "permissions": [ "tabs", "storage","activeTab","notifications"],
+    "permissions": [ "tabs", "storage","activeTab","tabCapture", "desktopCapture"],
     "host_permissions": ["https://yhkuo.com:8000/"],
+    "background": {
+      "service_worker": "src/background.ts",
+      "type": "module"
+    },
     "action": { 
       "default_popup": "index.html" ,
       "default_icon": {
@@ -18,5 +22,9 @@
       "16": "src/assets/icon16.png",
       "48": "src/assets/icon48.png",
       "128": "src/assets/icon128.png"
+    },
+    "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self'",
+      "sandbox": "sandbox allow-scripts; script-src 'self' 'https://apis.google.com/'; object-src 'self'"
     }
   }
