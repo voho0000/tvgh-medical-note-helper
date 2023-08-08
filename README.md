@@ -14,7 +14,6 @@ The Medical Assistant app is a React Chrome Extension application that utilizes 
 ### Prerequisites
 
 - Node.js
-- Expo CLI
 
 ### Installing Dependencies
 
