@@ -34,39 +34,50 @@ export const addPatientRecord = async (patientId: string): Promise<void> => {
 
 
 export const uploadDataToFirestore = async (
-  userId:string,
+  // userId:string,
   patientId: string,
   patientInfo: string,
   asrResponse: string,
   gptResponse: string
 ) => {
-  // const userId =auth.currentUser?.uid
+  const userId =auth.currentUser?.uid
 
-  // if (!userId) {
-  //   throw new Error('User not authenticated, please log in again');
-  // }
+  if (!userId) {
+    throw new Error('User not authenticated, please log in again');
+  }
 
-  // await updateDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId), {
-  //   patientInfo,
-  //   asrResponse,
-  //   gptResponse,
-  // });
-    await updateDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId), {
+  await updateDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId), {
     patientInfo,
     asrResponse,
     gptResponse,
   });
+    // await updateDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId), {
+    // patientInfo,
+    // asrResponse,
+    // gptResponse,
+  // });
 };
 
 export const fetchSinglePatientRecord = async (
   patientId: string,
-  userId: string
+  // userId: string
 ): Promise<any> => {
-  // const userId =auth.currentUser?.uid
+  const userId =auth.currentUser?.uid
 
-  // if (!userId) {
-  //   throw new Error('User not authenticated, please log in again');
-  // }
+  if (!userId) {
+    throw new Error('User not authenticated, please log in again');
+  }
+
+  const docSnap = await getDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId));
+  console.log(docSnap)
+
+  if (!docSnap.exists()) {
+    throw new Error(`Failed to fetch patient record: ${patientId}`);
+  }
+
+  return docSnap.data();
+  // const userID =auth.currentUser?.uid
+  // console.log(userID)
 
   // const docSnap = await getDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId));
 
@@ -75,16 +86,6 @@ export const fetchSinglePatientRecord = async (
   // }
 
   // return docSnap.data();
-  // const userID =auth.currentUser?.uid
-  // console.log(userID)
-
-  const docSnap = await getDoc(doc(db, 'PatientRecords', userId, 'PatientRecord', patientId));
-
-  if (!docSnap.exists()) {
-    throw new Error(`Failed to fetch patient record: ${patientId}`);
-  }
-
-  return docSnap.data();
 };
 
 export const deletePatientRecord = async (

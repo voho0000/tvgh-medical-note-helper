@@ -70,8 +70,16 @@ const RecordingScreen: React.FC = () => {
         const fetchData = async () => {
             try {
                 setIsLoadingData(true); // Start loading
-                if (patientId && userId) {
-                    const patientRecord = await fetchSinglePatientRecord(patientId, userId);
+                // if (patientId && userId) {
+                //     const patientRecord = await fetchSinglePatientRecord(patientId, userId);
+                //     if (patientRecord) {
+                //         setAsrResponse(patientRecord.asrResponse);
+                //         setGptResponse(patientRecord.gptResponse);
+                //         setPatientInfo(patientRecord.patientInfo);
+                //     }
+                // }
+                if (patientId ) {
+                    const patientRecord = await fetchSinglePatientRecord(patientId);
                     if (patientRecord) {
                         setAsrResponse(patientRecord.asrResponse);
                         setGptResponse(patientRecord.gptResponse);
@@ -90,8 +98,11 @@ const RecordingScreen: React.FC = () => {
 
     useEffect(() => {
         if (!isLoadingData) { // Only save to Firestore if not loading data
-            if (patientId && userId) {
-                uploadDataToFirestore(userId, patientId, patientInfo, asrResponse, gptResponse)
+            // if (patientId && userId) {
+            //     uploadDataToFirestore(userId, patientId, patientInfo, asrResponse, gptResponse)
+            // }
+            if (patientId) {
+                uploadDataToFirestore(patientId, patientInfo, asrResponse, gptResponse)
             }
         }
     }, [patientInfo, asrResponse, gptResponse, patientId, isLoadingData]); // Add isLoadingData to dependencies

@@ -5,10 +5,6 @@
     "description": "Help clinicians",
     "permissions": [ "tabs", "storage","activeTab","tabCapture", "desktopCapture"],
     "host_permissions": ["https://yhkuo.com:8000/"],
-    "background": {
-      "service_worker": "src/background.ts",
-      "type": "module"
-    },
     "action": { 
       "default_popup": "index.html" ,
       "default_icon": {
